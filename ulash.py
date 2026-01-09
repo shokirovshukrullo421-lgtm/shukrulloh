@@ -9,6 +9,7 @@ def ulash(dbname, password):
         host="localhost",
         port="5432"
     )
+    
     return conn
 
 # ===== DATABASE LARNI KO'RISH =====

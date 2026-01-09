@@ -1,47 +1,41 @@
-import os
-import asyncio
-from telethon import TelegramClient, events
+from f_yalar import login, register, view_tweets, write_tweet, profile
 
-# ================== SOZLAMALAR ==================
+print("=== Twitter CLI ===")
 
-api_id = 12345678          # <-- O'ZINGNIKI
-api_hash = "API_HASH_BU_YERGA"  # <-- O'ZINGNIKI
+user_id = None
+while not user_id:
+    print("\n1. Login\n2. Ro‘yxatdan o‘tish")
+    choice = input("Tanlov: ")
+    if choice == "1":
+        user_id = login()
+    elif choice == "2":
+        register()
+        user_id = login()  # registerdan keyin login qilamiz
+    else:
+        print("❌ Noto‘g‘ri tanlov")
 
-BOT_USERNAME = "kuy_navo_bot"   # bot username (@siz)
-LINKS_FILE = "links.txt"
-DOWNLOAD_DIR = "videos"
+# =========================
+# Main menu
+# =========================
+if user_id:
+    while True:
+        print("\n=== MAIN MENU ===")
+        print("1. Tweetlarni ko'rish")
+        print("2. Tweet yozish")
+        print("3. Profilim (keyin yoziladi)")
+        print("4. Chiqish")
 
-# ================================================
+        choice = input("Tanlov: ")
 
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-
-client = TelegramClient("session", api_id, api_hash)
-
-async def main():
-    # linklarni o‘qish
-    with open(LINKS_FILE, "r", encoding="utf-8") as f:
-        links = [l.strip() for l in f if l.strip()]
-
-    print(f"🔗 Jami linklar: {len(links)}")
-
-    for idx, link in enumerate(links, start=1):
-        print(f"\n[{idx}/{len(links)}] Botga yuborildi: {link}")
-
-        await client.send_message(BOT_USERNAME, link)
-
-        print("⏳ Video kutilmoqda...")
-
-        # video kelguncha kutish
-        async for message in client.iter_messages(BOT_USERNAME, limit=5):
-            if message.video:
-                file_path = await message.download_media(file=DOWNLOAD_DIR)
-                print(f"✅ Video saqlandi: {file_path}")
-                break
-
-        await asyncio.sleep(5)  # botni charchatmaslik uchun
-
-    print("\n🎉 BARCHA LINKLAR TUGADI!")
-
-# ishga tushirish
-with client:
-    client.loop.run_until_complete(main())
+        if choice == "1":
+            view_tweets(user_id)
+        elif choice == "2":
+            write_tweet(user_id)
+        elif choice == "3":
+            profile(user_id)
+            print("👤 Profil funksiyasi hozircha ishlamaydi")
+        elif choice == "4":
+            print("❌ Chiqildi")
+            break
+        else:
+            print("❌ Noto‘g‘ri tanlov")
